@@ -14,28 +14,82 @@
       padding: 10px 14px; border-radius: 8px; font-size: 14px;
       font-family: Arial, sans-serif;
     }
+    .capture-btn {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      background: white;
+      border: none;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      font-size: 32px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+    .flash {
+      position: fixed;
+      inset: 0;
+      background: white;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.1s;
+    }
   </style>
 </head>
 <body>
   <div class="instructions">Point camera at your printed marker</div>
+  <button class="capture-btn" onclick="captureAR()">📷</button>
+  <div class="flash" id="flash"></div>
 
   <a-scene
     embedded
     vr-mode-ui="enabled: false"
-    arjs="sourceType: webcam; debugUIEnabled: false;">
+    arjs="sourceType: webcam; debugUIEnabled: false;"
+    renderer="preserveDrawingBuffer: true;">
 
     <a-marker type="pattern" url="pattern-Marker001.patt">
-
       <a-entity
         gltf-model="20220604_Ornithopod_AERO-7.glb"
         position="0 0 0"
         rotation="-90 0 0"
         scale="0.3 0.3 0.3">
       </a-entity>
-
     </a-marker>
 
     <a-entity camera></a-entity>
   </a-scene>
+
+  <script>
+    function captureAR() {
+      // Flash effect
+      const flash = document.getElementById('flash');
+      flash.style.opacity = '1';
+      setTimeout(() => flash.style.opacity = '0', 150);
+
+      // Get the camera video feed and the AR WebGL canvas
+      const video = document.querySelector('video');
+      const arCanvas = document.querySelector('canvas');
+
+      // Create a new canvas to composite both layers
+      const output = document.createElement('canvas');
+      output.width = arCanvas.width;
+      output.height = arCanvas.height;
+      const ctx = output.getContext('2d');
+
+      // Draw camera feed first, then AR overlay on top
+      ctx.drawImage(video, 0, 0, output.width, output.height);
+      ctx.drawImage(arCanvas, 0, 0);
+
+      // Save as image
+      const link = document.createElement('a');
+      link.download = 'ar-capture.png';
+      link.href = output.toDataURL('image/png');
+      link.click();
+    }
+  </script>
 </body>
 </html>
