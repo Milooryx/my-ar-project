@@ -25,7 +25,6 @@
       border-radius: 50%;
       width: 70px;
       height: 70px;
-      font-size: 32px;
       cursor: pointer;
       box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     }
@@ -42,7 +41,7 @@
 </head>
 <body>
   <div class="instructions">Point camera at your printed marker</div>
-  <button class="capture-btn" onclick="captureAR()">📷</button>
+  <button class="capture-btn" onclick="captureAR()"></button>
   <div class="flash" id="flash"></div>
 
   <a-scene
@@ -63,18 +62,16 @@
     <a-entity camera></a-entity>
   </a-scene>
 
-<script>
+  <script>
     function captureAR() {
-      // Flash effect
       const flash = document.getElementById('flash');
       flash.style.opacity = '1';
       setTimeout(() => flash.style.opacity = '0', 150);
 
-      // Wait for the exact right render frame
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           const video = document.querySelector('video');
-          const arCanvas = document.querySelector('canvas');
+          const arCanvas = document.querySelector('a-scene').canvas;
 
           const output = document.createElement('canvas');
           output.width = arCanvas.width;
