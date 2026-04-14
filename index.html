@@ -63,32 +63,33 @@
     <a-entity camera></a-entity>
   </a-scene>
 
-  <script>
+<script>
     function captureAR() {
       // Flash effect
       const flash = document.getElementById('flash');
       flash.style.opacity = '1';
       setTimeout(() => flash.style.opacity = '0', 150);
 
-      // Get the camera video feed and the AR WebGL canvas
-      const video = document.querySelector('video');
-      const arCanvas = document.querySelector('canvas');
+      // Wait for the exact right render frame
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const video = document.querySelector('video');
+          const arCanvas = document.querySelector('canvas');
 
-      // Create a new canvas to composite both layers
-      const output = document.createElement('canvas');
-      output.width = arCanvas.width;
-      output.height = arCanvas.height;
-      const ctx = output.getContext('2d');
+          const output = document.createElement('canvas');
+          output.width = arCanvas.width;
+          output.height = arCanvas.height;
+          const ctx = output.getContext('2d');
 
-      // Draw camera feed first, then AR overlay on top
-      ctx.drawImage(video, 0, 0, output.width, output.height);
-      ctx.drawImage(arCanvas, 0, 0);
+          ctx.drawImage(video, 0, 0, output.width, output.height);
+          ctx.drawImage(arCanvas, 0, 0);
 
-      // Save as image
-      const link = document.createElement('a');
-      link.download = 'ar-capture.png';
-      link.href = output.toDataURL('image/png');
-      link.click();
+          const link = document.createElement('a');
+          link.download = 'ar-capture.png';
+          link.href = output.toDataURL('image/png');
+          link.click();
+        });
+      });
     }
   </script>
 </body>
